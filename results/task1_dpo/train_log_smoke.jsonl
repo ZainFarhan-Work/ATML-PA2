@@ -1,0 +1,2 @@
+{"step": 1, "beta": 0.1, "time_s": 9.012271637000595, "loss": 0.6931471824645996, "logit_mean": 0.0, "policy_margin_mean": -56.61140727996826, "preference_accuracy": 0.0, "grad_norm": 1.865441083908081}
+{"step": 2, "beta": 0.1, "time_s": 15.551436727000691, "loss": 0.693788115794842, "logit_mean": -0.0012541551527997048, "policy_margin_mean": -99.62576470008263, "preference_accuracy": 0.38461538461538464, "grad_norm": 2.0514910221099854}

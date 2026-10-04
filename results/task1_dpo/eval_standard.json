@@ -1,0 +1,18 @@
+{
+  "name": "standard",
+  "adapter": "outputs/task1_dpo/standard",
+  "beta": 0.1,
+  "dpo_loss": 0.6744764227291633,
+  "preference_accuracy": 0.6275862068965518,
+  "margin_mean": 0.44588552497584244,
+  "n_pairs": 290,
+  "n_generated": 290,
+  "kl_token_mean": 0.00013980004587210715,
+  "kl_sequence_sum_mean": 0.02169021876079255,
+  "reward_mean": 1.3820222525761046,
+  "reward_std": 1.157793329931085,
+  "length_mean": 155.15172413793104,
+  "length_std": 104.56404280990424,
+  "length_iqr": 215.25,
+  "frac_hit_cap_no_eos": 0.43103448275862066
+}

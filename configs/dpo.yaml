@@ -3,8 +3,8 @@ beta: 0.10
 betas: [0.03, 0.10, 0.30]
 learning_rate: 2.0e-5
 weight_decay: 0.0
-batch_size: 2
-grad_accum_steps: 8
+batch_size: 1
+grad_accum_steps: 16
 epochs: 1
 short_ablation_examples: 600
 max_sequence_length: 768

@@ -160,7 +160,17 @@
 \appendix
 \section*{Appendix}
 
+\section{More Method Details}
+\label{app:more-method}
 
+\section{Deviations and Caveats}
+\label{app:deviations}
+
+\subsection{Direct Preference Optimization (DPO)}
+
+\begin{tight}
+  \item We changed the Batch Size to 1 and Gradient Accumulate Steps to 16, keeping effective batch size constant. This was done as our hardware would run out of memory otherwise.
+\end{tight}
 
 
 

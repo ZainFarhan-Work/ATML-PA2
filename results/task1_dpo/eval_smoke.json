@@ -1,0 +1,18 @@
+{
+  "name": "smoke",
+  "adapter": "outputs/task1_dpo/standard",
+  "beta": 0.1,
+  "dpo_loss": 0.6744764227291633,
+  "preference_accuracy": 0.6275862068965518,
+  "margin_mean": 0.44588552497584244,
+  "n_pairs": 290,
+  "n_generated": 6,
+  "kl_token_mean": 0.00022278928372543305,
+  "kl_sequence_sum_mean": 0.0390252765112867,
+  "reward_mean": 1.4451904296875,
+  "reward_std": 1.035129568367901,
+  "length_mean": 175.16666666666666,
+  "length_std": 113.10528526799955,
+  "length_iqr": 172.75,
+  "frac_hit_cap_no_eos": 0.5
+}

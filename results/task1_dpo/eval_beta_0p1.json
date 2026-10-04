@@ -1,0 +1,18 @@
+{
+  "name": "beta_0p1",
+  "adapter": "outputs/task1_dpo/beta_0p1",
+  "beta": 0.1,
+  "dpo_loss": 0.6863825428074803,
+  "preference_accuracy": 0.6241379310344828,
+  "margin_mean": 0.14207507628819038,
+  "n_pairs": 290,
+  "n_generated": 290,
+  "kl_token_mean": -0.0002043802960542962,
+  "kl_sequence_sum_mean": -0.03203555337225633,
+  "reward_mean": 1.2918684597673087,
+  "reward_std": 1.2119506888001355,
+  "length_mean": 156.7448275862069,
+  "length_std": 104.20568382872237,
+  "length_iqr": 218.75,
+  "frac_hit_cap_no_eos": 0.4379310344827586
+}

@@ -1,0 +1,7 @@
+{
+  "run_name": "beta_0p3",
+  "beta": 0.3,
+  "optimizer_steps": 37,
+  "train_examples": 581,
+  "wall_time_s": 336.8763783550021
+}

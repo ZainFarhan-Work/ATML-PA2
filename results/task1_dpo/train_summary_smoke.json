@@ -1,0 +1,7 @@
+{
+  "run_name": "smoke",
+  "beta": 0.1,
+  "optimizer_steps": 2,
+  "train_examples": 29,
+  "wall_time_s": 16.588873071001217
+}

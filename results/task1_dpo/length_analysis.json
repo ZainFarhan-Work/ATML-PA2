@@ -1,0 +1,70 @@
+[
+  {
+    "model": "standard",
+    "adapter": "outputs/task1_dpo/standard",
+    "stratified": {
+      "overall": {
+        "n": 237,
+        "accuracy": 0.5654008438818565,
+        "margin_mean": 0.2790172054797788,
+        "dpo_loss": 0.6820886167795849
+      },
+      "preferred_longer": {
+        "n": 78,
+        "accuracy": 0.44871794871794873,
+        "margin_mean": -0.09521856063451523
+      },
+      "length_matched": {
+        "n": 80,
+        "accuracy": 0.575,
+        "margin_mean": 0.204842971265316
+      },
+      "rejected_longer": {
+        "n": 79,
+        "accuracy": 0.6708860759493671,
+        "margin_mean": 0.7236289585692973
+      }
+    },
+    "word_limit": {
+      "n_prompts": 10,
+      "compliance_rate": 0.4,
+      "words_mean": 40.3,
+      "words_std": 14.670037491431302,
+      "tokens_mean": 47.5
+    }
+  },
+  {
+    "model": "length_balanced",
+    "adapter": "outputs/task1_dpo/length_balanced",
+    "stratified": {
+      "overall": {
+        "n": 237,
+        "accuracy": 0.6033755274261603,
+        "margin_mean": 0.45503015457829343,
+        "dpo_loss": 0.6760212458387206
+      },
+      "preferred_longer": {
+        "n": 78,
+        "accuracy": 0.4358974358974359,
+        "margin_mean": -0.4875806661752554
+      },
+      "length_matched": {
+        "n": 80,
+        "accuracy": 0.5875,
+        "margin_mean": 0.3469813048839569
+      },
+      "rejected_longer": {
+        "n": 79,
+        "accuracy": 0.7848101265822784,
+        "margin_mean": 1.4951257494431507
+      }
+    },
+    "word_limit": {
+      "n_prompts": 10,
+      "compliance_rate": 0.4,
+      "words_mean": 39.5,
+      "words_std": 13.793114224133722,
+      "tokens_mean": 46.2
+    }
+  }
+]

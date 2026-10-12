@@ -1,0 +1,16 @@
+{
+  "n_completions": 121,
+  "length_min": 2,
+  "length_median": 176.0,
+  "length_max": 511,
+  "L_max": 512,
+  "grpo": {
+    "loglog_slope_gradnorm_vs_length": -0.4521877147902942,
+    "share_of_total_gradient_from_shorter_half": 0.8370940634792836
+  },
+  "dr_grpo": {
+    "loglog_slope_gradnorm_vs_length": 0.5451893140964926,
+    "share_of_total_gradient_from_shorter_half": 0.2861249341155133
+  },
+  "max_abs_error_of_ratio_vs_n_over_L": 0.0005629000544585816
+}

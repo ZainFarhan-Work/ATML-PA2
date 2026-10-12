@@ -1,0 +1,36 @@
+{
+  "sensitivities": {
+    "verifier": {
+      "S_reason": 0.0,
+      "reason_tie": 1.0,
+      "reason_wrong": 0.0,
+      "S_outcome": 1.0,
+      "outcome_tie": 0.0,
+      "outcome_wrong": 0.0,
+      "S_outcome_good_reasoning_wrong_final": 1.0,
+      "S_outcome_gold_distractor": 1.0,
+      "filler_susceptibility_prefers_filler": 0.0,
+      "filler_tie": 1.0,
+      "distractor_robustness_prefers_clean": 1.0
+    },
+    "judge": {
+      "S_reason": 0.0,
+      "reason_tie": 1.0,
+      "reason_wrong": 0.0,
+      "S_outcome": 0.125,
+      "outcome_tie": 0.875,
+      "outcome_wrong": 0.0,
+      "S_outcome_good_reasoning_wrong_final": 0.05,
+      "S_outcome_gold_distractor": 0.2,
+      "filler_susceptibility_prefers_filler": 0.25,
+      "filler_tie": 0.75,
+      "distractor_robustness_prefers_clean": 0.2
+    }
+  },
+  "judge_order_consistency": {
+    "corrupt_reasoning_correct_final": 1.0,
+    "good_reasoning_wrong_final": 0.9,
+    "persuasive_filler_correct": 1.0,
+    "gold_distractor_wrong_final": 0.7
+  }
+}

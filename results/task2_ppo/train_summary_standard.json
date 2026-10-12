@@ -1,0 +1,12 @@
+{
+  "run_name": "standard",
+  "updates": 20,
+  "clip_epsilon": 0.2,
+  "kl_beta": 0.1,
+  "wall_time_s": 293.8448761249997,
+  "peak_vram_gb": 4.90638848,
+  "peak_vram_reserved_gb": 4.93879296,
+  "reward_first5": 1.1374504566192627,
+  "reward_last5": 0.5315544366836548,
+  "kl_ref_last5": -0.00021120497222000268
+}

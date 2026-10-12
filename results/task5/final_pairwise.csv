@@ -1,0 +1,4 @@
+pair,gsm_win_rate_first,svamp_win_rate_first,gsm_W/T/L,svamp_W/T/L,gsm_judge_agrees_when_verifier_discriminates,gsm_judge_opposes_when_verifier_discriminates,gsm_judge_prefers_when_verifier_ties,gsm_full_agreement,svamp_judge_agrees_when_verifier_discriminates,svamp_full_agreement
+rlaif_vs_sft,0.5033333333333333,0.52,8/286/6,12/80/8,0.2222222222222222,0.1111111111111111,0.037800687285223365,0.94,0.25,0.79
+rlvr_vs_sft,0.5033333333333333,0.525,7/288/5,13/79/8,0.07692307692307693,0.07692307692307693,0.03484320557491289,0.9266666666666666,0.25,0.79
+rlaif_vs_rlvr,0.495,0.51,6/285/9,11/80/9,0.16666666666666666,0.0,0.04513888888888889,0.9233333333333333,0.0,0.78

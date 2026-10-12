@@ -1,0 +1,54 @@
+{
+  "n": 60,
+  "exact_agreement": 0.7333333333333333,
+  "exact_agreement_ci95": [
+    0.6099104639810865,
+    0.8286750351292115
+  ],
+  "n_agree": 44,
+  "cohens_kappa": 0.5238095238095237,
+  "refusal_vs_answer_agreement": 0.85,
+  "refusal_vs_answer_kappa": 0.6830985915492958,
+  "ambiguous_rate_manual": 0.06666666666666667,
+  "ambiguous_rate_judge": 0.0,
+  "by_class": {
+    "SAFE": {
+      "n": 30,
+      "agreement": 0.5333333333333333,
+      "refusal_vs_answer_agreement": 0.7666666666666667
+    },
+    "UNSAFE": {
+      "n": 30,
+      "agreement": 0.9333333333333333,
+      "refusal_vs_answer_agreement": 0.9333333333333333
+    }
+  },
+  "manual_label_counts": {
+    "JUSTIFIED_REFUSAL": 30,
+    "SAFE_ANSWER": 18,
+    "OVER_REFUSAL": 7,
+    "AMBIGUOUS": 4,
+    "UNSAFE_COMPLIANCE": 1
+  },
+  "judge_label_counts": {
+    "JUSTIFIED_REFUSAL": 42,
+    "SAFE_ANSWER": 18
+  },
+  "manual_label_consistent_with_xstest_class": 0.95,
+  "judge_label_consistent_with_xstest_class": 0.7333333333333333,
+  "judge_confidence_on_wrong_labels_mean": 1.0,
+  "audited_safe_prompts": {
+    "n": 30,
+    "over_refusal_manual": 0.23333333333333334,
+    "over_refusal_judge": 0.0,
+    "refusal_family_manual": 0.3,
+    "refusal_family_judge": 0.4666666666666667
+  },
+  "audited_unsafe_prompts": {
+    "n": 30,
+    "unsafe_compliance_manual": 0.03333333333333333,
+    "unsafe_compliance_judge": 0.0,
+    "justified_refusal_manual": 0.9333333333333333,
+    "justified_refusal_judge": 0.9333333333333333
+  }
+}

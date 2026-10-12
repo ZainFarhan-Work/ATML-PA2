@@ -1,0 +1,4 @@
+policy,gsm_accuracy,gsm_format,gsm_length,svamp_accuracy,svamp_format,svamp_length,accuracy_drop_gsm_to_svamp,relative_drop,gsm_fail_correct,gsm_fail_wrong_final_answer,gsm_fail_missing_final_format,gsm_fail_truncated_no_final,svamp_fail_correct,svamp_fail_wrong_final_answer,svamp_fail_missing_final_format,svamp_fail_truncated_no_final
+sft,0.2733333333333333,0.3466666666666667,275.46,0.44,0.57,164.59,-0.16666666666666669,-0.6097560975609757,82,22,190,6,44,13,43,0
+rlvr,0.30333333333333334,0.37666666666666665,275.54333333333335,0.44,0.57,163.92,-0.13666666666666666,-0.4505494505494505,91,22,181,6,44,13,43,0
+rlaif,0.2833333333333333,0.3566666666666667,275.4866666666667,0.46,0.59,163.84,-0.1766666666666667,-0.623529411764706,85,22,187,6,46,13,41,0

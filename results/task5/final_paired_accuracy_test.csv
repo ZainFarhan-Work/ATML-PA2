@@ -1,0 +1,7 @@
+dataset,pair,first_only_correct,second_only_correct,net,exact_mcnemar_p
+gsm,rlvr_vs_sft,11,2,9,0.0225
+gsm,rlaif_vs_sft,6,3,3,0.5078
+gsm,rlaif_vs_rlvr,3,9,-6,0.146
+transfer,rlvr_vs_sft,2,2,0,1.0
+transfer,rlaif_vs_sft,3,1,2,0.625
+transfer,rlaif_vs_rlvr,2,0,2,0.5

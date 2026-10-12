@@ -1,0 +1,14 @@
+{
+  "run_name": "norm_dr_grpo",
+  "loss_type": "dr_grpo",
+  "updates": 8,
+  "num_generations": 4,
+  "wall_time_s": 148.77088054199976,
+  "peak_vram_gb": 5.097819648,
+  "peak_vram_reserved_gb": 5.291114496,
+  "reward_first5": 1.1138691544532775,
+  "reward_last5": 1.6277867794036864,
+  "kl_ref_last5": -0.0001341841067187488,
+  "uninformative_group_fraction": 0.0,
+  "skipped_updates": 1
+}

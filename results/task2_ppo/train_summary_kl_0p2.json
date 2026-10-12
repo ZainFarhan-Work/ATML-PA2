@@ -1,0 +1,12 @@
+{
+  "run_name": "kl_0p2",
+  "updates": 8,
+  "clip_epsilon": 0.2,
+  "kl_beta": 0.2,
+  "wall_time_s": 75.2683116610001,
+  "peak_vram_gb": 4.889610752,
+  "peak_vram_reserved_gb": 4.91782144,
+  "reward_first5": 1.3156115055084228,
+  "reward_last5": 1.7412796020507812,
+  "kl_ref_last5": 0.000469815230826498
+}

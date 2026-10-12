@@ -1,0 +1,95 @@
+{
+  "dataset": "transfer",
+  "n": 100,
+  "policies": {
+    "sft": {
+      "n": 100,
+      "accuracy": 0.44,
+      "accuracy_sem": 0.04988876515698589,
+      "format_compliance": 0.57,
+      "length_mean": 164.59,
+      "length_std": 71.47798192450595,
+      "length_median": 143.0,
+      "hit_cap_rate": 0.0,
+      "failure_types": {
+        "correct": 44,
+        "wrong_final_answer": 13,
+        "missing_final_format": 43,
+        "truncated_no_final": 0
+      }
+    },
+    "rlvr": {
+      "n": 100,
+      "accuracy": 0.44,
+      "accuracy_sem": 0.04988876515698589,
+      "format_compliance": 0.57,
+      "length_mean": 163.92,
+      "length_std": 71.85995825214484,
+      "length_median": 143.0,
+      "hit_cap_rate": 0.0,
+      "failure_types": {
+        "correct": 44,
+        "wrong_final_answer": 13,
+        "missing_final_format": 43,
+        "truncated_no_final": 0
+      }
+    },
+    "rlaif": {
+      "n": 100,
+      "accuracy": 0.46,
+      "accuracy_sem": 0.05009082659620331,
+      "format_compliance": 0.59,
+      "length_mean": 163.84,
+      "length_std": 71.82377322307704,
+      "length_median": 143.0,
+      "hit_cap_rate": 0.0,
+      "failure_types": {
+        "correct": 46,
+        "wrong_final_answer": 13,
+        "missing_final_format": 41,
+        "truncated_no_final": 0
+      }
+    }
+  },
+  "pairwise": {
+    "rlaif_vs_sft": {
+      "win_rate_first": 0.52,
+      "wins": 12,
+      "ties": 80,
+      "losses": 8,
+      "n_verifier_discriminates": 4,
+      "n_verifier_tie": 96,
+      "judge_agrees_when_verifier_discriminates": 0.25,
+      "judge_tie_when_verifier_discriminates": 0.5,
+      "judge_opposes_when_verifier_discriminates": 0.25,
+      "judge_prefers_when_verifier_ties": 0.1875,
+      "full_agreement_rate": 0.79
+    },
+    "rlvr_vs_sft": {
+      "win_rate_first": 0.525,
+      "wins": 13,
+      "ties": 79,
+      "losses": 8,
+      "n_verifier_discriminates": 4,
+      "n_verifier_tie": 96,
+      "judge_agrees_when_verifier_discriminates": 0.25,
+      "judge_tie_when_verifier_discriminates": 0.25,
+      "judge_opposes_when_verifier_discriminates": 0.5,
+      "judge_prefers_when_verifier_ties": 0.1875,
+      "full_agreement_rate": 0.79
+    },
+    "rlaif_vs_rlvr": {
+      "win_rate_first": 0.51,
+      "wins": 11,
+      "ties": 80,
+      "losses": 9,
+      "n_verifier_discriminates": 2,
+      "n_verifier_tie": 98,
+      "judge_agrees_when_verifier_discriminates": 0.0,
+      "judge_tie_when_verifier_discriminates": 1.0,
+      "judge_opposes_when_verifier_discriminates": 0.0,
+      "judge_prefers_when_verifier_ties": 0.20408163265306123,
+      "full_agreement_rate": 0.78
+    }
+  }
+}

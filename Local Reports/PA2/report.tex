@@ -75,7 +75,7 @@
   {\end{itemize}}
 
 % Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
-\title{Formatting Instructions For NeurIPS 2026}
+\title{Methods of Pos Training Alignment in LLMs}
 
 
 % The \author macro works with any number of authors. There are two commands
@@ -123,10 +123,18 @@
 
 
 \begin{abstract}
-  The abstract paragraph
+  In this paper we look at various forms of post training for LLMs and study their effect on our Models.
+  We will be doing 3 Main experiments: Direct Preference Optimization (DPO), Proximal Policy Optimization (PPO), Group Relative
+  Policy Optimization (GRPO) and then we compare their performances on Safe and Unsafe prompts. We will also see the differences
+  between Reinforcement Learning with Verifiable Rewards (RLVR) and Reinforcement Learning from AI
+  Feedback (RLAIF).
 \end{abstract}
 
 \section{Introduction}
+  This is a short study done on the different methods of LLM alignment with 3 main focuses. DPO, PPO, and GRPO. For each method
+  we will use collect and present our data with a short analysis of our results. Alongside that we will also explore how much of a differences
+  using RLVR vs RLAIF makes.
+
 
 \section{Methods and Setup}
 
@@ -141,9 +149,147 @@
 
 \subsection{Direct Preference Optimization (DPO)}
 
-\subsubsection{Standard DPO}
+\begin{table}[t]
+    \centering
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{l c l c c c c c c}
+        \toprule
+        Condition & $\beta$ & Budget & Loss & Pref. Acc. &
+        KL/Token & RM Score & Length & At Cap \\
+        \midrule
+        Standard & 0.10 & 1 epoch (91 steps)
+        & 0.674 & 0.628 & $1.40{\times}10^{-4}$
+        & $1.38 \pm 1.16$ & $155.2 \pm 104.6$ & 43.1\% \\
+
+        Short fork & 0.03 & 581 pairs (37 steps)
+        & 0.691 & 0.607 & $-1.02{\times}10^{-4}$
+        & $1.31 \pm 1.26$ & $153.7 \pm 105.7$ & 43.8\% \\
+
+        Short fork & 0.10 & 581 pairs (37 steps)
+        & 0.686 & 0.624 & $-2.04{\times}10^{-4}$
+        & $1.29 \pm 1.21$ & $156.7 \pm 104.2$ & 43.8\% \\
+
+        Short fork & 0.30 & 581 pairs (37 steps)
+        & 0.677 & 0.624 & $-4.50{\times}10^{-5}$
+        & $1.31 \pm 1.17$ & $151.7 \pm 105.2$ & 42.4\% \\
+        \bottomrule
+    \end{tabular}
+    \caption{DPO $\beta$ ablation. The standard model was trained for
+    one epoch. the short forks used the same 581 retained training pairs
+    and optimizer budget. KL/token is the sampled-response estimator
+    averaged over response tokens. Reward-model score and generated
+    length are mean $\pm$ standard deviation over 290 held-out prompts.}
+    \label{tab:dpo-beta}
+\end{table}
+
+\begin{table}[t]
+    \centering
+    \small
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{l c c c c c}
+        \toprule
+        Model & Preferred Longer & Length Matched &
+        Rejected Longer & Overall & DPO Loss \\
+        \midrule
+        Standard
+        & 44.9\% (78) & 57.5\% (80) & 67.1\% (79)
+        & 56.5\% (237) & 0.6821 \\
+
+        Length-balanced
+        & 43.6\% (78) & 58.8\% (80) & 78.5\% (79)
+        & 60.3\% (237) & 0.6760 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Held-out DPO preference accuracy stratified by the relative
+    lengths of preferred and rejected responses. Counts are shown in
+    parentheses. Nine of the 246 held-out pairs were excluded by the
+    prompt-length filter.}
+    \label{tab:dpo-length-strata}
+\end{table}
+
+We first do a standard full training run for DPO, then we make three short forks for a $\beta$ Study. The data can bee seen in Table\ref{tab:dpo-beta}. We can see
+a very similar level of preference accuracy, with the exception of $\beta = 0.03$ which is the lowest at 0.607. This tells us that too low a value will damage performance,
+but we cant conclusively say a best value with our data. The Response Lengths are also very similar, however considering that all rows show over 40\% of responses exceed
+the length cap (and were hence truncated), this data cant not be meaningfully interpreted.
+
+We then try to determine if the model is being biased with its respond length and learning a false correlation between length and preferred response. We can see in Table\ref{tab:dpo-length-strata}
+that overall the model trained on length balanced data performs marginally better than standard. With Length Matched pairs, the accuracy is very close to each other. But for Rejected response being longer,
+the length balanced model does much better than standard, even though performance in preferred response longer is quite similar. This shows us that improvement is not uniform across strata, and while
+length balancing does help with preference discrimination in, it does not conclusively demonstrate that the standard model learned a length bias
 
 \subsection{Proximal Policy Optimization (PPO)}
+
+
+\begin{table}[t]
+    \centering
+    \small
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lr}
+        \toprule
+        Quantity & Value \\
+        \midrule
+        Wall-clock time & 293.8 s \\
+        Peak VRAM (allocated) & 4.91 GB \\
+        Mean reward, first 5 / last 5 updates & 1.14 / 0.53 \\
+        Mean reward, all 20 updates & $1.24 \pm 1.58$ \\
+        Responses at 512-token cap without EOS & 4 / 20 \\
+        Maximum clip fraction & 0.000 \\
+        Critic explained variance (mean) & $-15.2$ \\
+        Critic--return correlation (mean) & 0.089 \\
+        \midrule
+        Held-out reward: midpoint / PPO & 1.866 / 1.838 \\
+        Held-out reward difference (SEM) & $-0.028\ (0.035)$ \\
+        Held-out response length: midpoint / PPO & 287.5 / 289.0 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Standard PPO continuation and held-out evaluation on 100
+    common prompts. Training statistics cover 20 updates; held-out
+    responses use greedy decoding with a 768-token cap.}
+    \label{tab:ppo-standard}
+\end{table}
+
+\begin{table}[t]
+    \centering
+    \small
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lrrrr}
+        \toprule
+        Policy & $\epsilon$ & Held-out reward (SEM)
+        & $\Delta$Reward (SEM) & Mean length \\
+        \midrule
+        Standard PPO & 0.20 & $1.838\ (0.125)$ & $-0.028\ (0.035)$ & 289.0 \\
+        Short fork & 0.05 & $1.867\ (0.129)$ & $+0.001\ (0.026)$ & 289.3 \\
+        Short fork & 0.20 & $1.846\ (0.127)$ & $-0.020\ (0.033)$ & 288.9 \\
+        Short fork & 0.50 & $1.847\ (0.129)$ & $-0.019\ (0.030)$ & 289.2 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Held-out evaluation of PPO clipping forks on the same 100
+    prompts. $\Delta$Reward is the paired difference against the
+    untouched midpoint; SEM denotes standard error of the mean.}
+    \label{tab:ppo-clipping}
+\end{table}
+
+\begin{table}[t]
+    \centering
+    \small
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{rrrrrr}
+        \toprule
+        $\beta_{\mathrm{KL}}$ & Train reward
+        & First 4 / last 4 & Final KL
+        & Mean length & EOS rate \\
+        \midrule
+        0.00 & 0.92 & $1.64 / 0.20$ & 0.0054 & 253.0 & 62\% \\
+        0.10 & 1.51 & $1.66 / 1.35$ & 0.0048 & 243.6 & 75\% \\
+        0.20 & 1.54 & $1.66 / 1.41$ & 0.0025 & 247.9 & 75\% \\
+        \bottomrule
+    \end{tabular}
+    \caption{KL-pressure forks over eight updates each. Train reward
+    is the reward-model score on training rollouts; final KL is the
+    reported sampled estimator.}
+    \label{tab:ppo-kl}
+\end{table}
 
 \subsection{Group Relative Policy Optimization (GRPO)}
 

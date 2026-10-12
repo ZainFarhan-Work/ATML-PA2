@@ -1,0 +1,12 @@
+{
+  "run_name": "clip_0p5",
+  "updates": 8,
+  "clip_epsilon": 0.5,
+  "kl_beta": 0.1,
+  "wall_time_s": 68.33984446,
+  "peak_vram_gb": 4.889610752,
+  "peak_vram_reserved_gb": 4.91782144,
+  "reward_first5": 1.0263407468795775,
+  "reward_last5": 1.83313148021698,
+  "kl_ref_last5": 0.0009591560170520097
+}

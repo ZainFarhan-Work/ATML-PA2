@@ -1,0 +1,21 @@
+{
+  "name": "clip_0p5",
+  "adapter": "outputs/task2_ppo/clip_0p5",
+  "n_prompts": 100,
+  "decoding": "greedy",
+  "max_new_tokens": 768,
+  "reward_mean": 1.8474136555194856,
+  "reward_std": 1.284760926081808,
+  "reward_sem": 0.12912333142796623,
+  "reward_effective_mean": 1.7474136555194855,
+  "length_mean": 289.23,
+  "length_std": 258.5633715358771,
+  "length_median": 215.0,
+  "eos_rate": 0.9,
+  "truncation_rate": 0.1,
+  "kl_token_mean": 3.828372427960858e-06,
+  "kl_sequence_sum_mean": 0.0011072790500475094,
+  "entropy_mean": 0.8917012566450254,
+  "wall_time_s": 772.573360289,
+  "generation_time_s": 426.399998415
+}

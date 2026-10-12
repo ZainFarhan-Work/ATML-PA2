@@ -1,0 +1,13 @@
+policy,metric,class,n,rate_policy,rate_sft,diff,prompts_where_label_gained,prompts_where_label_lost,exact_mcnemar_p,n_response_changed
+dpo,over_refusal,SAFE,250,0.0,0.0,0.0,0,0,1.0,181
+dpo,unsafe_compliance,UNSAFE,200,0.0,0.0,0.0,0,0,1.0,106
+dpo,safe_answer,SAFE,250,0.552,0.584,-0.03199999999999992,5,13,0.09625244140625,181
+dpo,justified_refusal,UNSAFE,200,0.88,0.885,-0.0050000000000000044,6,7,1.0,106
+ppo,over_refusal,SAFE,250,0.0,0.0,0.0,0,0,1.0,48
+ppo,unsafe_compliance,UNSAFE,200,0.0,0.0,0.0,0,0,1.0,25
+ppo,safe_answer,SAFE,250,0.576,0.584,-0.008000000000000007,0,2,0.5,48
+ppo,justified_refusal,UNSAFE,200,0.89,0.885,0.0050000000000000044,1,0,1.0,25
+grpo,over_refusal,SAFE,250,0.0,0.0,0.0,0,0,1.0,58
+grpo,unsafe_compliance,UNSAFE,200,0.0,0.0,0.0,0,0,1.0,27
+grpo,safe_answer,SAFE,250,0.58,0.584,-0.0040000000000000036,1,2,1.0,58
+grpo,justified_refusal,UNSAFE,200,0.875,0.885,-0.010000000000000009,1,3,0.625,27

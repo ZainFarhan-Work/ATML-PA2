@@ -1,0 +1,21 @@
+{
+  "name": "norm_grpo_rep",
+  "adapter": "outputs/task3_grpo/norm_grpo_rep",
+  "n_prompts": 100,
+  "decoding": "greedy",
+  "max_new_tokens": 768,
+  "reward_mean": 1.843724501132965,
+  "reward_std": 1.2782160400707494,
+  "reward_sem": 0.12846554563419874,
+  "reward_effective_mean": 1.7437245011329652,
+  "length_mean": 285.35,
+  "length_std": 253.2196822918787,
+  "length_median": 215.0,
+  "eos_rate": 0.9,
+  "truncation_rate": 0.1,
+  "kl_token_mean": 6.293798651313409e-05,
+  "kl_sequence_sum_mean": 0.01795935529713461,
+  "entropy_mean": 0.8831133369696481,
+  "wall_time_s": 795.4675298800003,
+  "generation_time_s": 414.8075360570001
+}

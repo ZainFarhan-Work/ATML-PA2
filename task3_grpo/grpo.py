@@ -9,12 +9,17 @@ def group_relative_advantages(rewards: torch.Tensor, group_ids: torch.Tensor, ep
     """Return one scalar advantage per sampled completion.
 
     `group_ids[i]` identifies which prompt produced reward `rewards[i]`.
-    Validate this implementation against the group-relative definition in the assignment manual.
+    Manual: A_k = (r_k - mu_r) / (sigma_r + eps), with mu_r and sigma_r taken over the completions of
+    the SAME prompt. (The starter normalised over the whole batch and ignored `group_ids`, which is only
+    invisible when the batch holds a single prompt group.) sigma_r is the population standard deviation.
     """
-    # Starter implementation: students must validate the grouping logic carefully.
-    mean = rewards.mean()
-    std = rewards.std(unbiased=False).clamp_min(eps)
-    return (rewards - mean) / std
+    _, inv = torch.unique(group_ids, return_inverse=True)
+    n_groups = int(inv.max().item()) + 1
+    count = torch.zeros(n_groups, device=rewards.device, dtype=rewards.dtype).index_add_(0, inv, torch.ones_like(rewards))
+    mean = torch.zeros_like(count).index_add_(0, inv, rewards) / count
+    centred = rewards - mean[inv]
+    var = torch.zeros_like(count).index_add_(0, inv, centred ** 2) / count
+    return centred / (var.sqrt()[inv] + eps)
 
 
 def grpo_policy_loss(

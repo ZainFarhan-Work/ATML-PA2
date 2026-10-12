@@ -1,0 +1,21 @@
+{
+  "name": "kl_0p2",
+  "adapter": "outputs/task2_ppo/kl_0p2",
+  "n_prompts": 100,
+  "decoding": "greedy",
+  "max_new_tokens": 768,
+  "reward_mean": 1.8937658429145814,
+  "reward_std": 1.2867963946048946,
+  "reward_sem": 0.1293279037117134,
+  "reward_effective_mean": 1.8237658429145813,
+  "length_mean": 291.11,
+  "length_std": 257.24929134984995,
+  "length_median": 231.5,
+  "eos_rate": 0.93,
+  "truncation_rate": 0.07,
+  "kl_token_mean": -7.518124220950995e-06,
+  "kl_sequence_sum_mean": -0.0021886011614697053,
+  "entropy_mean": 0.8872230671086924,
+  "wall_time_s": 760.2187844739997,
+  "generation_time_s": 432.03755865699986
+}

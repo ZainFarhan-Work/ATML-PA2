@@ -1,0 +1,21 @@
+{
+  "name": "midpoint",
+  "adapter": "checkpoints/ppo_midpoint_policy",
+  "n_prompts": 100,
+  "decoding": "greedy",
+  "max_new_tokens": 768,
+  "reward_mean": 1.8659181535243987,
+  "reward_std": 1.284534475410018,
+  "reward_sem": 0.12910057227912225,
+  "reward_effective_mean": 1.7859181535243989,
+  "length_mean": 287.49,
+  "length_std": 255.95130376694704,
+  "length_median": 215.0,
+  "eos_rate": 0.92,
+  "truncation_rate": 0.08,
+  "kl_token_mean": -1.4260822354117408e-05,
+  "kl_sequence_sum_mean": -0.0040998435142682865,
+  "entropy_mean": 0.8856586819177271,
+  "wall_time_s": 779.028916037,
+  "generation_time_s": 428.4227310099998
+}

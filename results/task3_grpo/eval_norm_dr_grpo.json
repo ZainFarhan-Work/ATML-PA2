@@ -1,0 +1,21 @@
+{
+  "name": "norm_dr_grpo",
+  "adapter": "outputs/task3_grpo/norm_dr_grpo",
+  "n_prompts": 100,
+  "decoding": "greedy",
+  "max_new_tokens": 768,
+  "reward_mean": 1.847067037820816,
+  "reward_std": 1.262001734964548,
+  "reward_sem": 0.12683594665621048,
+  "reward_effective_mean": 1.767067037820816,
+  "length_mean": 288.3,
+  "length_std": 256.0114645870376,
+  "length_median": 215.0,
+  "eos_rate": 0.92,
+  "truncation_rate": 0.08,
+  "kl_token_mean": -2.181775744247716e-05,
+  "kl_sequence_sum_mean": -0.006290060116152745,
+  "entropy_mean": 0.8814894731096766,
+  "wall_time_s": 802.2472337899999,
+  "generation_time_s": 421.8862126269996
+}

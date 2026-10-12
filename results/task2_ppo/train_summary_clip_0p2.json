@@ -1,0 +1,12 @@
+{
+  "run_name": "clip_0p2",
+  "updates": 8,
+  "clip_epsilon": 0.2,
+  "kl_beta": 0.1,
+  "wall_time_s": 106.44991958800074,
+  "peak_vram_gb": 4.889610752,
+  "peak_vram_reserved_gb": 4.91782144,
+  "reward_first5": 1.3233632087707519,
+  "reward_last5": 1.8245624542236327,
+  "kl_ref_last5": 0.0009264719919883646
+}

@@ -1,0 +1,17 @@
+{
+  "diagnostics": {
+    "n_uncached_calls": 400,
+    "mean_seconds": 0.18891397458496384,
+    "total_seconds": 75.56558983398554
+  },
+  "gsm": {
+    "n_uncached_calls": 419,
+    "mean_seconds": 0.2865478552362925,
+    "total_seconds": 120.06355134400656
+  },
+  "transfer": {
+    "n_uncached_calls": 124,
+    "mean_seconds": 0.21923602319350632,
+    "total_seconds": 27.185266875994785
+  }
+}

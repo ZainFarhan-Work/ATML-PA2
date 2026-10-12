@@ -149,6 +149,23 @@ def load_reward_model(cfg: dict):
     return model, tok
 
 
+def load_reward_model_cpu(cfg: dict):
+    """Frozen reward model in fp32 on the CPU.
+
+    The 6 GB GPU cannot hold policy + critic + 8-bit reward model during PPO, so the reward
+    model lives on the CPU instead. Scores agree with the course 8-bit GPU path to ~0.1.
+    """
+    model = AutoModelForSequenceClassification.from_pretrained(
+        cfg["reward_model"], num_labels=1, dtype=torch.float32, low_cpu_mem_usage=True
+    )
+    tok = load_tokenizer(cfg.get("reward_tokenizer", cfg["base_model"]), padding_side="left")
+    model.config.pad_token_id = tok.pad_token_id
+    model.eval()
+    for p in model.parameters():
+        p.requires_grad_(False)
+    return model, tok
+
+
 def load_value_model(cfg: dict, checkpoint: str, train_mode: str = "lora_head"):
     dtype = resolve_dtype(cfg.get("dtype", "float16"))
     model = AutoModelForSequenceClassification.from_pretrained(

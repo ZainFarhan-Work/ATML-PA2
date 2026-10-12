@@ -1,0 +1,7 @@
+dataset,pair,n,n_identical,n_different,judge_on_identical_W/T/L,judge_on_different_W/T/L,win_rate_first_on_different,judge_tie_rate_on_different,n_different_verifier_discriminates,judge_agrees_on_those,judge_tie_on_those,verifier_correct_first_only,verifier_correct_second_only
+gsm,rlaif_vs_rlvr,300,243,57,4/235/4,2/50/5,0.47368421052631576,0.8771929824561403,12,0.16666666666666666,0.8333333333333334,3,9
+gsm,rlaif_vs_sft,300,251,49,4/243/4,4/43/2,0.5204081632653061,0.8775510204081632,9,0.2222222222222222,0.6666666666666666,6,3
+gsm,rlvr_vs_sft,300,238,62,4/231/3,3/57/2,0.5080645161290323,0.9193548387096774,13,0.07692307692307693,0.8461538461538461,11,2
+transfer,rlaif_vs_rlvr,100,90,10,11/72/7,0/8/2,0.4,0.8,2,0.0,1.0,2,0
+transfer,rlaif_vs_sft,100,90,10,10/73/7,2/7/1,0.55,0.7,4,0.25,0.5,3,1
+transfer,rlvr_vs_sft,100,86,14,10/69/7,3/10/1,0.5714285714285714,0.7142857142857143,4,0.25,0.25,2,2

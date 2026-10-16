@@ -291,11 +291,229 @@ length balancing does help with preference discrimination in, it does not conclu
     \label{tab:ppo-kl}
 \end{table}
 
+We see in the standard PPO run in Table\ref{tab:ppo-standard} that our output does not deviate enough to put Clipping into play.
+Meaning the output of the new Model does not change enough to warrant clipping. The Critic explained variance is -15.2 which is very poor,
+implying that the run did not go well. Compared to our short forks in Table\ref{tab:ppo-clipping} we see that having a lower $\epsilon$ results in
+in the only positive SEM reward changes, however the changes are very small and even less apparent for mean length and Held Out reward, no clear winner in clipping.
+
+In the KL pressure experiment, seen in Table\ref{tab:ppo-kl}, we see having higher $\beta_{KL}$ results in having a higher Train Reward, as it forces the model to stay closer to the
+original policy as the KL penalty is higher.
+
 \subsection{Group Relative Policy Optimization (GRPO)}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Effect of group size under a fixed budget of 192 cached completions.}
+\label{tab:grpo_group_size}
+\begin{tabular}{rccccc}
+\toprule
+$K$ & Informative (\%) & Reward SD & SD Across Partitions
+& Baseline SE & No Usable (\%) \\
+\midrule
+2 & 94.8 & 0.388 & 0.027 & 0.566 & 27.6 \\
+4 & 95.8 & 0.551 & 0.017 & 0.400 & 23.2 \\
+8 & 95.8 & 0.619 & 0.000 & 0.283 & 16.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Effect of length normalization on gradient contribution across response lengths.}
+\label{tab:grpo_length_gradient}
+\begin{tabular}{lcc}
+\toprule
+Method & Log-log slope of gradient norm vs.\ length
+& Gradient share from shorter half (\%) \\
+\midrule
+Canonical GRPO & $-0.452$ & 83.7 \\
+Dr.\ GRPO      & $+0.545$ & 28.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Held-out evaluation of GRPO length-normalization variants on 100 prompts.}
+\label{tab:grpo_norm_eval}
+\begin{tabular}{lcccc}
+\toprule
+Policy & Reward (SEM) & $\Delta$ Reward vs.\ Start (SEM)
+& Mean Length & Truncation (\%) \\
+\midrule
+Start / midpoint & 1.856 (0.124) & --- & 292.9 & 8 \\
+Canonical GRPO   & 1.904 (0.120) & $+0.049$ (0.032) & 288.8 & 8 \\
+Dr.\ GRPO        & 1.847 (0.127) & $-0.008$ (0.051) & 288.3 & 8 \\
+Canonical replicate & 1.844 (0.128) & $-0.012$ (0.042) & 285.4 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We can see in Table\ref{tab:grpo_group_size} that as the Group size increases, Reward SD also increases and "No Usable" (uncertainty of its mean reward falls) decreases, meaning better performance
+for us. however since the number of group also decreases with group size, we have fewer groups for training.
+
+In Table\ref{tab:grpo_length_gradient} we see that there is a high bias towards towards the shorter half of our responses (meaning they skew our calculations) in canonical GRPO than Dr. GRPO.
+We can also see with the log gradient that for canonical the relationship is negative, meaning the longer response lengths, the less the value of the gradients. Meanwhile, with Dr GRPO it is positive,
+resulting in the opposite result.
+
+The truncation of the three models is similar, as can be seen in Table\ref{tab:grpo_norm_eval}, except Canonical Replicate which is at 10\%. Canonical GRPO has higher SEM, the only one which is a positive change from the reference policy,
+while Dr GRPO and Canonical both had less then the reference policy.
 
 \subsection{Safety Calibration of the Aligned Policies}
 
+\begin{table}[t]
+\centering
+\small
+\caption{Class-corrected refusal rates on the safety evaluation set.
+Intervals are 95\% Wilson intervals.}
+\label{tab:t4-corrected}
+\begin{tabular}{lcccc}
+\toprule
+Policy
+& Safe refusal (judge)
+& Safe refusal (keyword)
+& Unsafe non-refusal (judge)
+& Unsafe non-refusal (keyword) \\
+\midrule
+SFT  & 40.4\% [35,47] & 40.4\% & 11.5\% [8,17] & 10.5\% \\
+DPO  & 43.6\% [38,50] & 40.0\% & 12.0\% [8,17] & 11.0\% \\
+PPO  & 41.2\% [35,47] & 40.4\% & 11.0\% [7,16] & 10.5\% \\
+GRPO & 41.6\% [36,48] & 40.0\% & 12.5\% [9,18] & 11.5\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Paired comparisons against SFT on identical prompts.
+Rates use the known prompt class and judge-derived labels.}
+\label{tab:t4-paired}
+\begin{tabular}{llrrrrrr}
+\toprule
+Policy & Metric & SFT & Policy & Diff.
+& Newly flagged & No longer & $p$ \\
+\midrule
+DPO & Safe refusal       & 0.404 & 0.436 & 0.032 & 13 & 5 & 0.096 \\
+DPO & Unsafe non-refusal & 0.115 & 0.120 & 0.005 & 7  & 6 & 1.000 \\
+PPO & Safe refusal       & 0.404 & 0.412 & 0.008 & 2  & 0 & 0.500 \\
+PPO & Unsafe non-refusal & 0.115 & 0.110 & -0.005 & 0 & 1 & 1.000 \\
+GRPO & Safe refusal      & 0.404 & 0.416 & 0.012 & 3  & 0 & 0.250 \\
+GRPO & Unsafe non-refusal& 0.115 & 0.125 & 0.010 & 3  & 1 & 0.625 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Manual-versus-judge agreement over 240 policy-response pairs.
+The distinct-response row excludes duplicate responses.}
+\label{tab:t4-audit}
+\begin{tabular}{lrrrr}
+\toprule
+Subset & $n$ & Agreement
+& Cohen's $\kappa$ & Ambiguous (manual / judge) \\
+\midrule
+All policy-response pairs & 240
+& 73.8\% [68,79] & 0.523 & 5.4\% / 0.0\% \\
+Distinct responses only & 117
+& 71.8\% [63,79] & 0.513 & 6.0\% / 0.0\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+According to Table\ref{tab:t4-corrected} we can see that there is a massive bias towards refusing responses than accepting them, as Safe refusal
+hovers around 40\% and Unsafe non refusal hovers around 11\%. This can be interpreted as a good thing, as refusal with a benign request is not that critical (users can still get that information from
+other sanitized sources like Google), but unsafe non refusal to lead to potentially extremely damaging consequences.
+
+In Table\ref{tab:t4-paired} we see both DPO and PPO have P values of 1 for Unsafe Non Refusal and GRPO also has a high p value of 0.625. Meaning that the data is not representative
+of a systematic change. In Safe Refusal we see the difference being extremely small, non being more than 0.010, meaning we cant say that our methods have resulted in any meaningful change between
+SFT and the rest of our policies.
+
+Table\ref{tab:t4-audit} shows an agreement of upto 70\% with compared to a manual audit, however it should be noted that the AI judge does not use the ambiguous category at all.
+
 \subsection{Feedback Source: RLVR versus RLAIF}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Exact final-answer accuracy, format compliance, and mean response length on GSM8K ($n=300$) and SVAMP ($n=100$).}
+\label{tab:t5-acc}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Policy & GSM8K Acc. (SEM) & Format (\%) & Len. &
+SVAMP Acc. (SEM) & Format (\%) & Len. & Change (pts) \\
+\midrule
+SFT   & 27.3\% (0.026) & 34.7 & 275.5 & 44\% (0.050) & 57 & 164.6 & +16.7 \\
+RLVR  & 30.3\% (0.027) & 37.7 & 275.5 & 44\% (0.050) & 57 & 163.9 & +13.7 \\
+RLAIF & 28.3\% (0.026) & 35.7 & 275.5 & 46\% (0.050) & 59 & 163.8 & +17.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Paired accuracy comparisons on identical problems using exact McNemar tests.}
+\label{tab:t5-mcn}
+\begin{tabular}{llrrrrr}
+\toprule
+Dataset & Comparison & First only correct &
+Second only correct & Net & Exact $p$ \\
+\midrule
+GSM8K & RLVR vs.\ SFT  & 11 & 2 & 9  & 0.0225 \\
+GSM8K & RLAIF vs.\ SFT & 6  & 3 & 3  & 0.5078 \\
+GSM8K & RLAIF vs.\ RLVR & 3 & 9 & $-6$ & 0.1460 \\
+SVAMP & RLVR vs.\ SFT  & 2 & 2 & 0  & 1.0000 \\
+SVAMP & RLAIF vs.\ SFT & 3 & 1 & 2  & 0.6250 \\
+SVAMP & RLAIF vs.\ RLVR & 2 & 0 & 2  & 0.5000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Controlled response-pair diagnostics comparing the verifier with the AI judge. The clean, correct response is the preferred reference.}
+\label{tab:t5-diag}
+\begin{tabular}{lrrrrr}
+\toprule
+Perturbation & Verifier $n$ & Better / Tie / Wrong &
+Judge $n$ & Better / Tie / Wrong & Order consistency \\
+\midrule
+Corrupted reasoning, correct final
+& 20 & 0\% / 100\% / 0\%
+& 40 & 0\% / 100\% / 0\% & 1.00 \\
+
+Good reasoning, wrong final
+& 20 & 100\% / 0\% / 0\%
+& 40 & 5\% / 95\% / 0\% & 0.90 \\
+
+Correct answer + persuasive filler
+& 20 & 0\% / 100\% / 0\%
+& 40 & 0\% / 75\% / 25\% & 1.00 \\
+
+Gold distractor, wrong final
+& 20 & 100\% / 0\% / 0\%
+& 40 & 20\% / 80\% / 0\% & 0.70 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We can see SFT perform the worst while RLVR performs the best in GSM8K in table\ref{tab:t5-acc}, however in we also see RLAIF perform better than RLVR in SVAMP.
+In paired accuracy comparison we see that excluding the first comparison, all p values are greater than or equal to 0.5, making the data unreliable and it cannot be used to draw any
+conclusive conclusions.
+
+Finally in Table\ref{tab:t5-diag} We can see that corrupted reasoning does not seem to effect, This is expected of Verifier as (depending on the task) it is systematically unable to look deeper, however.
+the judge also seems to tie in its responses.For Good reasoning but wrong answer, we see that verifier prefers clean all the time (again, this is expected since the verifier only checks the final answer),
+the judge however only prefers clean 5\% of the time while tieing 95\% of the time, which is quite problematic. Correct answer with persuasive reasoning ties in Verifier (again expected), but judges seems to prefer
+the perturbation 25\% of the time. Which by itself is not bad, but combined with our previous result it strongly suggests that AI judge may have a strong stylistic bias. Lastly,
+Gold distractor, wrong final seems to have 100\% better preference for clean with verifier (again this is expected), but judge Ties 80\% of the time, which shows poor performance.
+
 
 \subsection{Cross Task Discussion}
 

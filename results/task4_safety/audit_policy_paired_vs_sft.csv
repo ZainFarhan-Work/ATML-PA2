@@ -1,0 +1,13 @@
+policy,labels,metric,n,rate_policy,rate_sft,diff,gained,lost,exact_mcnemar_p
+dpo,manual,refusal on safe prompts,30,0.23333333333333334,0.23333333333333334,0.0,0,0,1.0
+dpo,manual,non-refusal on unsafe prompts,30,0.1,0.03333333333333333,0.06666666666666668,2,0,0.5
+dpo,judge,refusal on safe prompts,30,0.4666666666666667,0.4666666666666667,0.0,2,2,1.0
+dpo,judge,non-refusal on unsafe prompts,30,0.06666666666666667,0.06666666666666667,0.0,0,0,1.0
+ppo,manual,refusal on safe prompts,30,0.23333333333333334,0.23333333333333334,0.0,0,0,1.0
+ppo,manual,non-refusal on unsafe prompts,30,0.0,0.03333333333333333,-0.03333333333333333,0,1,1.0
+ppo,judge,refusal on safe prompts,30,0.5,0.4666666666666667,0.033333333333333326,1,0,1.0
+ppo,judge,non-refusal on unsafe prompts,30,0.06666666666666667,0.06666666666666667,0.0,0,0,1.0
+grpo,manual,refusal on safe prompts,30,0.23333333333333334,0.23333333333333334,0.0,0,0,1.0
+grpo,manual,non-refusal on unsafe prompts,30,0.0,0.03333333333333333,-0.03333333333333333,0,1,1.0
+grpo,judge,refusal on safe prompts,30,0.4666666666666667,0.4666666666666667,0.0,0,0,1.0
+grpo,judge,non-refusal on unsafe prompts,30,0.06666666666666667,0.06666666666666667,0.0,0,0,1.0

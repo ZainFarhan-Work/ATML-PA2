@@ -1,54 +1,145 @@
 {
-  "n": 60,
-  "exact_agreement": 0.7333333333333333,
-  "exact_agreement_ci95": [
-    0.6099104639810865,
-    0.8286750351292115
-  ],
-  "n_agree": 44,
-  "cohens_kappa": 0.5238095238095237,
-  "refusal_vs_answer_agreement": 0.85,
-  "refusal_vs_answer_kappa": 0.6830985915492958,
-  "ambiguous_rate_manual": 0.06666666666666667,
-  "ambiguous_rate_judge": 0.0,
-  "by_class": {
-    "SAFE": {
-      "n": 30,
-      "agreement": 0.5333333333333333,
-      "refusal_vs_answer_agreement": 0.7666666666666667
+  "n_pairs": 240,
+  "n_distinct_responses": 117,
+  "n_labels_copied_from_identical": 121,
+  "class_shown_while_labelling": false,
+  "overall": {
+    "n": 240,
+    "n_agree": 177,
+    "exact_agreement": 0.7375,
+    "ci95": [
+      0.6784051604901719,
+      0.7891114568548588
+    ],
+    "cohens_kappa": 0.5226971399709579,
+    "refusal_vs_answer_agreement": 0.8416666666666667,
+    "refusal_vs_answer_kappa": 0.6679893698350868,
+    "ambiguous_rate_manual": 0.05416666666666667,
+    "ambiguous_rate_judge": 0.0,
+    "agreement_safe_prompts": 0.55,
+    "agreement_unsafe_prompts": 0.925,
+    "manual_consistent_with_class": 0.9708333333333333,
+    "judge_consistent_with_class": 0.725
+  },
+  "per_policy": {
+    "sft": {
+      "n": 60,
+      "n_agree": 46,
+      "exact_agreement": 0.7666666666666667,
+      "ci95": [
+        0.6456348865960799,
+        0.8556056838156894
+      ],
+      "cohens_kappa": 0.5718654434250766,
+      "refusal_vs_answer_agreement": 0.8666666666666667,
+      "refusal_vs_answer_kappa": 0.7192982456140351,
+      "ambiguous_rate_manual": 0.05,
+      "ambiguous_rate_judge": 0.0,
+      "agreement_safe_prompts": 0.5666666666666667,
+      "agreement_unsafe_prompts": 0.9666666666666667,
+      "manual_consistent_with_class": 0.9666666666666667,
+      "judge_consistent_with_class": 0.7333333333333333
     },
-    "UNSAFE": {
-      "n": 30,
-      "agreement": 0.9333333333333333,
-      "refusal_vs_answer_agreement": 0.9333333333333333
+    "dpo": {
+      "n": 60,
+      "n_agree": 42,
+      "exact_agreement": 0.7,
+      "ci95": [
+        0.5749105303360957,
+        0.801019897472731
+      ],
+      "cohens_kappa": 0.4835007173601148,
+      "refusal_vs_answer_agreement": 0.8166666666666667,
+      "refusal_vs_answer_kappa": 0.6333333333333333,
+      "ambiguous_rate_manual": 0.06666666666666667,
+      "ambiguous_rate_judge": 0.0,
+      "agreement_safe_prompts": 0.5333333333333333,
+      "agreement_unsafe_prompts": 0.8666666666666667,
+      "manual_consistent_with_class": 0.95,
+      "judge_consistent_with_class": 0.7166666666666667
+    },
+    "ppo": {
+      "n": 60,
+      "n_agree": 44,
+      "exact_agreement": 0.7333333333333333,
+      "ci95": [
+        0.6099104639810865,
+        0.8286750351292115
+      ],
+      "cohens_kappa": 0.5018162947586922,
+      "refusal_vs_answer_agreement": 0.8333333333333334,
+      "refusal_vs_answer_kappa": 0.640503295386459,
+      "ambiguous_rate_manual": 0.05,
+      "ambiguous_rate_judge": 0.0,
+      "agreement_safe_prompts": 0.5333333333333333,
+      "agreement_unsafe_prompts": 0.9333333333333333,
+      "manual_consistent_with_class": 0.9833333333333333,
+      "judge_consistent_with_class": 0.7166666666666667
+    },
+    "grpo": {
+      "n": 60,
+      "n_agree": 45,
+      "exact_agreement": 0.75,
+      "ci95": [
+        0.6276768905451521,
+        0.8422361442158816
+      ],
+      "cohens_kappa": 0.5356037151702786,
+      "refusal_vs_answer_agreement": 0.85,
+      "refusal_vs_answer_kappa": 0.6797153024911032,
+      "ambiguous_rate_manual": 0.05,
+      "ambiguous_rate_judge": 0.0,
+      "agreement_safe_prompts": 0.5666666666666667,
+      "agreement_unsafe_prompts": 0.9333333333333333,
+      "manual_consistent_with_class": 0.9833333333333333,
+      "judge_consistent_with_class": 0.7333333333333333
     }
   },
+  "distinct_responses_only": {
+    "n": 117,
+    "n_agree": 84,
+    "exact_agreement": 0.717948717948718,
+    "ci95": [
+      0.6304874095354096,
+      0.7915526826182859
+    ],
+    "cohens_kappa": 0.513421550094518,
+    "refusal_vs_answer_agreement": 0.7948717948717948,
+    "refusal_vs_answer_kappa": 0.6129032258064515,
+    "ambiguous_rate_manual": 0.05982905982905983,
+    "ambiguous_rate_judge": 0.0,
+    "agreement_safe_prompts": 0.5909090909090909,
+    "agreement_unsafe_prompts": 0.8823529411764706,
+    "manual_consistent_with_class": 0.9658119658119658,
+    "judge_consistent_with_class": 0.717948717948718
+  },
+  "judge_confidence_on_wrong_labels_mean": 1.0,
+  "error_types": {
+    "over-refusal called a justified refusal / answer": 24,
+    "helpful answer called a refusal": 18,
+    "ambiguous response given a definite label": 13,
+    "justified refusal called an answer": 6,
+    "other": 1,
+    "unsafe compliance missed": 1
+  },
   "manual_label_counts": {
-    "JUSTIFIED_REFUSAL": 30,
-    "SAFE_ANSWER": 18,
-    "OVER_REFUSAL": 7,
-    "AMBIGUOUS": 4,
+    "JUSTIFIED_REFUSAL": 119,
+    "SAFE_ANSWER": 83,
+    "OVER_REFUSAL": 24,
+    "AMBIGUOUS": 13,
     "UNSAFE_COMPLIANCE": 1
   },
   "judge_label_counts": {
-    "JUSTIFIED_REFUSAL": 42,
-    "SAFE_ANSWER": 18
+    "JUSTIFIED_REFUSAL": 169,
+    "SAFE_ANSWER": 70,
+    "UNSAFE_COMPLIANCE": 1
   },
-  "manual_label_consistent_with_xstest_class": 0.95,
-  "judge_label_consistent_with_xstest_class": 0.7333333333333333,
-  "judge_confidence_on_wrong_labels_mean": 1.0,
-  "audited_safe_prompts": {
-    "n": 30,
-    "over_refusal_manual": 0.23333333333333334,
-    "over_refusal_judge": 0.0,
-    "refusal_family_manual": 0.3,
-    "refusal_family_judge": 0.4666666666666667
-  },
-  "audited_unsafe_prompts": {
-    "n": 30,
-    "unsafe_compliance_manual": 0.03333333333333333,
-    "unsafe_compliance_judge": 0.0,
-    "justified_refusal_manual": 0.9333333333333333,
-    "justified_refusal_judge": 0.9333333333333333
+  "policy_difference_attribution": {
+    "prompts": 60,
+    "manual_same_all_policies": 56,
+    "manual_differs_across_policies": 4,
+    "judge_unstable_while_manual_stable": 4,
+    "judge_captures_manual_difference": 0,
+    "judge_misses_manual_difference": 4
   }
 }

@@ -66,6 +66,13 @@
 \usepackage{capt-of}
 \usepackage{longtable}
 
+\renewcommand{\arraystretch}{0.85}
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{4pt plus 2pt minus 2pt}
+\setlength{\intextsep}{4pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\tabcolsep}{4pt}
+
 \newenvironment{tight}
   {\begin{itemize}
     \setlength{\itemsep}{0pt}
@@ -75,7 +82,7 @@
   {\end{itemize}}
 
 % Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
-\title{Methods of Pos Training Alignment in LLMs}
+\title{Methods of Post Training Alignment in LLMs}
 
 
 % The \author macro works with any number of authors. There are two commands
@@ -131,19 +138,45 @@
 \end{abstract}
 
 \section{Introduction}
-  This is a short study done on the different methods of LLM alignment with 3 main focuses. DPO, PPO, and GRPO. For each method
-  we will use collect and present our data with a short analysis of our results. Alongside that we will also explore how much of a differences
-  using RLVR vs RLAIF makes.
+
+One of the major challenges that modern AI development faces is with Alignment. Large Language Model on their own do not have an idea or mechanism to Judge
+human factors. It does not know of concepts like morality, and can not take decisions like if responding to prompt will hurt the user, compromise legality, or bring
+wider harm to society. As such these models can be exploited to aid in nefarious schemes and be used for harmful purposes.
+
+To combat this many Alignment methods have been researched, and in this study we will investigate them (namely DPO, PPO, and GRPO) to see their effectiveness on our models.
+Beyond this, we will also have to investigate the differences between AI Judgment and Human Judgement, as many of these methods use AI itself to train our models to learn
+"good behavior" from "bad behavior." This can be difficult as these do not have a rigours mathematical definition, but rely on human subjectivity to differentiate between what is
+considered good and what is considered bad. We use fine tuning to achieve this as we can use fine tunning methods to fine tune on safety. Lastly, we also see how much of a differences
+concrete verifiable rewards make compared to something like an AI judge for well defined problems (like maths).
 
 
 \section{Methods and Setup}
 
-\subsection{Direct Preference Optimization (DPO)}
+\textbf{Common Setup}
 
-\begin{tight}
-  \item \textbf{Dataset:} UltraFeedback Preference Pairs (course provided)
-  \item \textbf{Model:} Qwen2.5-1.5B-Instruct (Forzen with LoRA)
-\end{tight}
+For our experiments, we will use the Qwen2.5-1.5B Instruct model as our base policy. With LoRA adapters, rank \(r=8\), \(\alpha=16\), dropout 0.05.
+for fin tuning. We will use the seed 6304 as our random seed, where ever needed, to make results deterministic. Our base Model precision will be 16FP while our
+LoRA adapters precision will be 32FP
+
+\textbf{DPO, PPO, GRPO}
+
+For all of these we used yavuz-ai/qwen2.5-1.5b-rm-ultrafeedback as our reward model. For DPO we used \(\beta=0.1\) with learning rate \(2\times10^{-5}\) for one epoch.
+We limit maximum sequence length to 768 and cap generated tokens to 256 tokens. For short forks, the value of $\beta$ varies. For PPO we do 20 updates, one prompt per update. We run for
+two PPO epochs, with values: policy learning rate \(3\times10^{-6}\), \(\epsilon=0.2\), \(\beta_{\mathrm{KL}}=0.1\), \(\gamma=1\), \(\lambda=0.95\). For study we use short forks and vary
+clipping \(\epsilon\) and KL-penalty strength \(\beta_{\mathrm{KL}}\). For GRPO, we also have 20 updates, one prompt per update. We use group size \(K=4\) completions, one policy epoch, learning rate \(5\times10^{-6}\), \(\epsilon=0.2\), \(\beta=0.1\).
+For study we again use short forks and vary examine group size \(K\) and see values for canonical versus Dr. GRPO normalization. We also limit our response tokens to 512 and mask the rest.
+
+
+
+\textbf{Safety Calibration and RLVR vs RLAIF}
+
+We used Qwen2.5-3B-Instruct with 4-bit NF4 quantization and greedy decoding as the judge. We have a dataset of 450 prompts (250 safe and 200 unsafe) and we compare our four policies: SFT, DPO, PPO, and GRPO.
+We judge the on five categories: safe-prompt over-refusal, unsafe-prompt compliance, justified refusals, category-level behavior, and paired comparisons. We also do a manual audit of 240 prompts and compare them with our judge to
+see the difference in agreement between a Human Judge and an AI Judge. Though in practice this turned out to be 117 distinct responses, as some responses were identical across policies.
+
+For RLVR vs RLAIF we used two datasets, 300 GSM8K evaluation problems and 100 SVAMP transfer problems. We again used greedy decoding for judge and limited to 512 tokens. We compare only three policies,
+SFT, RLVR, and RLAIF.
+
 
 \section{Results}
 

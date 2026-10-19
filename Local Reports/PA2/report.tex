@@ -7,7 +7,7 @@
 % The authors should use one of these tracks.
 % Before accepting by the NeurIPS conference, select one of the options below.
 % 0. "default" for submission
-\usepackage{neurips_2026}
+% \usepackage{neurips_2026}
 % the "default" option is equal to the "main" option, which is used for the Main Track with double-blind reviewing.
 % 1. "main" option is used for the Main Track
 %  \usepackage[main]{neurips_2026}
@@ -42,7 +42,7 @@
 % For workshops (5., 6.), the authors should add the name of the workshop, "\workshoptitle" command is used to set the workshop title.
 % \workshoptitle{WORKSHOP TITLE}
 % 7. Education Track
-% \usepackage[education, final]{neurips_2026}
+\usepackage[education, final]{neurips_2026}
 
 % "preprint" option is used for arXiv or other preprint submissions
  % \usepackage[preprint]{neurips_2026}
@@ -164,7 +164,8 @@ For all of these we used yavuz-ai/qwen2.5-1.5b-rm-ultrafeedback as our reward mo
 We limit maximum sequence length to 768 and cap generated tokens to 256 tokens. For short forks, the value of $\beta$ varies. For PPO we do 20 updates, one prompt per update. We run for
 two PPO epochs, with values: policy learning rate \(3\times10^{-6}\), \(\epsilon=0.2\), \(\beta_{\mathrm{KL}}=0.1\), \(\gamma=1\), \(\lambda=0.95\). For study we use short forks and vary
 clipping \(\epsilon\) and KL-penalty strength \(\beta_{\mathrm{KL}}\). For GRPO, we also have 20 updates, one prompt per update. We use group size \(K=4\) completions, one policy epoch, learning rate \(5\times10^{-6}\), \(\epsilon=0.2\), \(\beta=0.1\).
-For study we again use short forks and vary examine group size \(K\) and see values for canonical versus Dr. GRPO normalization. We also limit our response tokens to 512 and mask the rest.
+For study we again use short forks and vary examine group size \(K\) and see values for canonical versus Dr. GRPO normalization. We also limit our response tokens to 512 and mask the rest. DPO derives a policy objective from preference data
+\citep{rafailov2023dpo}. PPO uses a clipped surrogate objective \citep{schulman2017ppo}.
 
 
 
@@ -241,15 +242,35 @@ SFT, RLVR, and RLAIF.
     \label{tab:dpo-length-strata}
 \end{table}
 
+
+
 We first do a standard full training run for DPO, then we make three short forks for a $\beta$ Study. The data can bee seen in Table\ref{tab:dpo-beta}. We can see
 a very similar level of preference accuracy, with the exception of $\beta = 0.03$ which is the lowest at 0.607. This tells us that too low a value will damage performance,
-but we cant conclusively say a best value with our data. The Response Lengths are also very similar, however considering that all rows show over 40\% of responses exceed
-the length cap (and were hence truncated), this data cant not be meaningfully interpreted.
+but we cant conclusively say a best value with our data.
+
+\[
+\mathcal{L}_{\mathrm{DPO}} =
+-\log \sigma\left(\beta\left[
+\log\frac{\pi_\theta(y^{+}|x)}{\pi_{\mathrm{ref}}(y^{+}|x)}
+-\log\frac{\pi_\theta(y^{-}|x)}{\pi_{\mathrm{ref}}(y^{-}|x)}
+\right]\right).
+\]
+
+Given the formula for the DPO loss, we expect a higher $\beta$ value to increase its sensitivity to the margin difference between the reference model and the our $\theta$ model.
+DPO Loss decreases across the tested values of \(\beta\). But since its a scaling factor directly in the loss, this relationship isn't a clean interpretation for which model is better.
+The preference accuracy rises from 60.7\% to 62.4\%, then plateaus, so the relationship in non-monotonic. The reward model score goes from changes from 1.31 to 1.29 to 1.31, also a non monotonic
+relationship, with rather small differences on top. KL/token is very close to zero, implying minimal change with respect to reference policy.
 
 We then try to determine if the model is being biased with its respond length and learning a false correlation between length and preferred response. We can see in Table\ref{tab:dpo-length-strata}
-that overall the model trained on length balanced data performs marginally better than standard. With Length Matched pairs, the accuracy is very close to each other. But for Rejected response being longer,
-the length balanced model does much better than standard, even though performance in preferred response longer is quite similar. This shows us that improvement is not uniform across strata, and while
-length balancing does help with preference discrimination in, it does not conclusively demonstrate that the standard model learned a length bias
+that overall the model trained on length balanced data performs marginally better than standard.
+The Response Lengths are also very similar, however considering that all rows show over 40\% of responses exceed
+the length cap (and were hence truncated), this data should be considered a bit limited in its finality.
+
+With Length Matched pairs, the accuracy is very close to each other. But for Rejected response being longer, the length balanced model does much better than standard, even though performance in preferred response longer is quite similar. This shows us that improvement is not uniform across strata, and while
+length balancing does help with preference discrimination in, it does not conclusively demonstrate that the standard model learned a length bias.
+
+It should be noted that this method does not guarantee a correct or better answer. It simply tries to make its answers closer to what we feed as preference data in the training dataset.
+If the dataset or the auxiliary reward model are not able to reflect good qualities in those responses, then those systematic biases remain. It will improve its measured preferences while the actual answers remain the same in terms of human utility.
 
 \subsection{Proximal Policy Optimization (PPO)}
 
@@ -257,80 +278,129 @@ length balancing does help with preference discrimination in, it does not conclu
 \begin{table}[t]
     \centering
     \small
-    \setlength{\tabcolsep}{5pt}
+    \setlength{\tabcolsep}{4pt}
     \begin{tabular}{lr}
         \toprule
         Quantity & Value \\
         \midrule
-        Wall-clock time & 293.8 s \\
-        Peak VRAM (allocated) & 4.91 GB \\
-        Mean reward, first 5 / last 5 updates & 1.14 / 0.53 \\
+        Mean reward, first 5 / last 5 & 1.14 / 0.53 \\
         Mean reward, all 20 updates & $1.24 \pm 1.58$ \\
-        Responses at 512-token cap without EOS & 4 / 20 \\
+        Responses capped without EOS & 4/20 \\
         Maximum clip fraction & 0.000 \\
         Critic explained variance (mean) & $-15.2$ \\
         Critic--return correlation (mean) & 0.089 \\
         \midrule
         Held-out reward: midpoint / PPO & 1.866 / 1.838 \\
-        Held-out reward difference (SEM) & $-0.028\ (0.035)$ \\
-        Held-out response length: midpoint / PPO & 287.5 / 289.0 \\
+        Paired reward difference (SEM) & $-0.028\ (0.035)$ \\
+        Held-out length: midpoint / PPO & 287.5 / 289.0 \\
+        Identical held-out responses & 70/100 \\
         \bottomrule
     \end{tabular}
-    \caption{Standard PPO continuation and held-out evaluation on 100
-    common prompts. Training statistics cover 20 updates; held-out
-    responses use greedy decoding with a 768-token cap.}
+    \caption{Standard PPO continuation over 20 updates and greedy
+    held-out evaluation on 100 common prompts. Held-out generation
+    uses a 768-token cap.}
     \label{tab:ppo-standard}
 \end{table}
 
 \begin{table}[t]
     \centering
     \small
-    \setlength{\tabcolsep}{5pt}
-    \begin{tabular}{lrrrr}
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{rrrrrr}
         \toprule
-        Policy & $\epsilon$ & Held-out reward (SEM)
-        & $\Delta$Reward (SEM) & Mean length \\
+        $\epsilon$ & Tokens affected & Gradient blocked
+        & Train reward & Held-out reward (SEM)
+        & $\Delta$ reward (SEM) \\
         \midrule
-        Standard PPO & 0.20 & $1.838\ (0.125)$ & $-0.028\ (0.035)$ & 289.0 \\
-        Short fork & 0.05 & $1.867\ (0.129)$ & $+0.001\ (0.026)$ & 289.3 \\
-        Short fork & 0.20 & $1.846\ (0.127)$ & $-0.020\ (0.033)$ & 288.9 \\
-        Short fork & 0.50 & $1.847\ (0.129)$ & $-0.019\ (0.030)$ & 289.2 \\
+        0.05 & 13.73\% & 6.66\% & 1.40
+        & $1.867\ (0.129)$ & $+0.001\ (0.026)$ \\
+        0.20 & 0.18\% & 0.09\% & 1.59
+        & $1.846\ (0.127)$ & $-0.020\ (0.033)$ \\
+        0.50 & 0.00\% & 0.00\% & 1.59
+        & $1.847\ (0.129)$ & $-0.019\ (0.030)$ \\
         \bottomrule
     \end{tabular}
-    \caption{Held-out evaluation of PPO clipping forks on the same 100
-    prompts. $\Delta$Reward is the paired difference against the
-    untouched midpoint; SEM denotes standard error of the mean.}
+    \caption{Clipping diagnostics at the cached-ratio scale and
+    performance of eight-update clipping forks. Held-out reward
+    differences are paired against the untouched midpoint.}
     \label{tab:ppo-clipping}
 \end{table}
 
 \begin{table}[t]
     \centering
     \small
-    \setlength{\tabcolsep}{5pt}
+    \setlength{\tabcolsep}{4pt}
     \begin{tabular}{rrrrrr}
         \toprule
         $\beta_{\mathrm{KL}}$ & Train reward
-        & First 4 / last 4 & Final KL
+        & First 4 / last 4 & Mean / final KL
         & Mean length & EOS rate \\
         \midrule
-        0.00 & 0.92 & $1.64 / 0.20$ & 0.0054 & 253.0 & 62\% \\
-        0.10 & 1.51 & $1.66 / 1.35$ & 0.0048 & 243.6 & 75\% \\
-        0.20 & 1.54 & $1.66 / 1.41$ & 0.0025 & 247.9 & 75\% \\
+        0.00 & 0.92 & $1.64 / 0.20$ & $0.0008 / 0.0054$
+        & 253.0 & 62\% \\
+        0.10 & 1.51 & $1.66 / 1.35$ & $0.0002 / 0.0048$
+        & 243.6 & 75\% \\
+        0.20 & 1.54 & $1.66 / 1.41$ & $0.0000 / 0.0025$
+        & 247.9 & 75\% \\
         \bottomrule
     \end{tabular}
-    \caption{KL-pressure forks over eight updates each. Train reward
-    is the reward-model score on training rollouts; final KL is the
-    reported sampled estimator.}
+    \caption{Eight-update PPO forks with different KL-penalty
+    coefficients. KL values are sampled estimates; the final value
+    summarizes the last updates.}
     \label{tab:ppo-kl}
 \end{table}
 
-We see in the standard PPO run in Table\ref{tab:ppo-standard} that our output does not deviate enough to put Clipping into play.
-Meaning the output of the new Model does not change enough to warrant clipping. The Critic explained variance is -15.2 which is very poor,
-implying that the run did not go well. Compared to our short forks in Table\ref{tab:ppo-clipping} we see that having a lower $\epsilon$ results in
-in the only positive SEM reward changes, however the changes are very small and even less apparent for mean length and Held Out reward, no clear winner in clipping.
+The central mechanism of PPO is not calculate the "advantage" of taking an action in a particular state. This advantage is then scaled with the ratio of the
+advantage of the new model's action and the advantage of the old model's action.
 
+\[
+\rho_t(\theta)=
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)}
+\]
+
+We then Clip this between an $\epsilon$ distance from 1. This makes sure that in any one update the model does not stray too far from the original policy. Though it does not
+prevent the model from moving far over many updates, it only limits the model in one update.
+
+\[
+L_{Clip}(\theta)=
+\mathbb{E}_t\left[
+\min\left(
+\rho_t\hat A_t,\;
+\operatorname{clip}(\rho_t,1-\epsilon,1+\epsilon)\hat A_t
+\right)
+\right]
+\]
+
+We see in the standard PPO run in Table\ref{tab:ppo-standard} that our output does not deviate enough to put Clipping into play.
+Maximum Clip fraction is 0. The Critic explained variance is -15.2 which is very poor,
+implying that the run did not go well. Compared to our short forks in Table\ref{tab:ppo-clipping} we see that having a lower $\epsilon$ results in
+in the only positive SEM reward changes. however the changes are very small. $\epsilon = 0.05$ has the most clipping with 6.66\% of gradients blocked and
+13.73\% of tokens affected. With $\epsilon = 0.5$ Clipping doesn't even happen, with 0 tokens effected and 0 gradients blocked. This pattern matched our theory.
+But with the differences being relatively small in held out reward, there in no clear $\epsilon$ winner.
+
+Another aspect of PPO is that it doesn't let the model diverge from our reference model too much.
+
+\[
+\mathcal{L}_{\mathrm{total}}
+\sim
+\mathcal{L}_{\mathrm{PPO}}
+-\beta_{\mathrm{KL}}\,
+D_{\mathrm{KL}}(\pi_\theta\|\pi_{\mathrm{ref}}),
+\]
+
+This is because we do not want to lose the language capabilities of the original model in the process of fine tunning. We vary $\beta_{KL}$ to test this.
 In the KL pressure experiment, seen in Table\ref{tab:ppo-kl}, we see having higher $\beta_{KL}$ results in having a higher Train Reward, as it forces the model to stay closer to the
-original policy as the KL penalty is higher.
+original policy as the KL penalty is higher. Having no penalty, so letting the model diverge as much as it wants, results in the harshest drop in Train reward going from  1.64 to 0.2.
+Meaning that for good performance, restricting the model and forcing it to stay close to the original.
+
+However, like DPO, PPO can also be gamed. Since the reward model is trained to approximate preference judgement, it is not a perfect measure for which response is better.
+It can learn correlations that do not indicate a better response, and PPO can exploit those correlations to give responses that score high with the rewards model without actually
+give a better more useful response.
+
+Our result for the standard run give Training reward, first five updates mean 1.14, last five mean 0.53. Four of 20 training responses hit the generation cap without EOS and
+70 of 100 greedy held-out responses were identical. This indicates that our runs didn't try to game the system. If it had we would've seen increasing train reward, with deteriorating
+external quality, but we see almost the opposite. The train reward decreased and the held out reward did not change much.
 
 \subsection{Group Relative Policy Optimization (GRPO)}
 
@@ -347,6 +417,26 @@ $K$ & Informative (\%) & Reward SD & SD Across Partitions
 2 & 94.8 & 0.388 & 0.027 & 0.566 & 27.6 \\
 4 & 95.8 & 0.551 & 0.017 & 0.400 & 23.2 \\
 8 & 95.8 & 0.619 & 0.000 & 0.283 & 16.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{6pt}
+\caption{Fraction of informative reward groups by prompt difficulty
+and group size $K$. A group is informative when its completions
+do not all receive the same reward. Each difficulty stratum contains
+eight prompts.}
+\label{tab:grpo_difficulty}
+\begin{tabular}{lccc}
+\toprule
+Difficulty & $K=2$ & $K=4$ & $K=8$ \\
+\midrule
+Hard   & 84.4\% & 87.5\% & 87.5\% \\
+Medium & 96.9\% & 100.0\% & 100.0\% \\
+Easy   & 100.0\% & 100.0\% & 100.0\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -385,15 +475,30 @@ Canonical replicate & 1.844 (0.128) & $-0.012$ (0.042) & 285.4 & 10 \\
 \end{tabular}
 \end{table}
 
-We can see in Table\ref{tab:grpo_group_size} that as the Group size increases, Reward SD also increases and "No Usable" (uncertainty of its mean reward falls) decreases, meaning better performance
-for us. however since the number of group also decreases with group size, we have fewer groups for training.
+GRPO is a variant of PPO with the goal of removing the value model (the critic). We saw in PPO how in the standard run
+the Critic explained variance (mean) was -15.2 which is an indication of very poor performance and poor advantage values. This would in theory fix that
+as we would no longer rely on the critic to calculate advantage. Instead we have the model produce multiple responses, we calculate their rewards and the advantage
+is calculate in terms of their mean.
 
-In Table\ref{tab:grpo_length_gradient} we see that there is a high bias towards towards the shorter half of our responses (meaning they skew our calculations) in canonical GRPO than Dr. GRPO.
-We can also see with the log gradient that for canonical the relationship is negative, meaning the longer response lengths, the less the value of the gradients. Meanwhile, with Dr GRPO it is positive,
-resulting in the opposite result.
+\[
+\hat A_i =
+\frac{r_i-\operatorname{mean}(r)}
+{\operatorname{std}(r)}
+\]
+
+We can see in Table\ref{tab:grpo_group_size} that as the Group size increases, Reward SD also increases, so more variation in reward and "No Usable" decreases, meaning more completions can be used as group size is increased.
+however since the number of group also decreases with group size, we have fewer groups for training. Another factor is that the Informative \$ remains very similar, showing that just because a completion is informative (gives new information)
+does not mean it is usable in training. We can also see in Table\ref{tab:grpo_difficulty} that for hard prompts the gain can be seen. But for medium and easy prompts we quickly reach 100\% informative and see no more returns. 
+
+In Table\ref{tab:grpo_length_gradient} and Table\ref{tab:grpo_norm_eval} we see that the normalization rule indeed changes the relationship between response length and gradient magnitude.
+We see that the Log-log slope of gradient norm vs. length is negative for Cannoical and positive for Dr GRPO. This means that they behave exactly the opposite. However this does not mean that
+the responses have improved. We see Dr GRPO with lower reward than cannoical, both have around the same mean length and truncation rates.
 
 The truncation of the three models is similar, as can be seen in Table\ref{tab:grpo_norm_eval}, except Canonical Replicate which is at 10\%. Canonical GRPO has higher SEM, the only one which is a positive change from the reference policy,
 while Dr GRPO and Canonical both had less then the reference policy.
+
+With no Critic, our primary concern becomes the usability and quality of the group. The standard GRPO run data is in the appendix in Table\ref{tab:grpo_standard}. We can see that mean within the group was 0.526 and no groups were marked as
+uninformative. There was some truncation that can effect usability. There was no Clipping and mean KL was low, so these two were not the observed limiting factors.
 
 \subsection{Safety Calibration of the Aligned Policies}
 
@@ -459,19 +564,28 @@ Distinct responses only & 117
 \end{tabular}
 \end{table}
 
+As we saw with our previous models, higher performance on measurement metrics does not always translate to good safety calibration. As there are multiple factors involved,
+these can all influence the final output, like group quality for GRPO, the effectiveness and competence of the critic and in PPO, and the correct alignment between preference in DPO and what we
+actually want to get out of our model. As such we see on actual safe vs unsafe prompts how these models perform, as well as comparing with the regular SFT model. We have already seen the metrics
+for our models but a more direct comparison can be seen in the appendix at Table\ref{tab:t4_reward_safety}.
+
 According to Table\ref{tab:t4-corrected} we can see that there is a massive bias towards refusing responses than accepting them, as Safe refusal
 hovers around 40\% and Unsafe non refusal hovers around 11\%. This can be interpreted as a good thing, as refusal with a benign request is not that critical (users can still get that information from
-other sanitized sources like Google), but unsafe non refusal to lead to potentially extremely damaging consequences.
+other sanitized sources like Google), but unsafe non refusal to lead to potentially extremely damaging consequences. Though speaking across different polices, their performance is quites similar. Though this can't be used
+as conclusive evidence for these different methods, as this can be both due to architectural differences or failure to train the models extensively enough to show notable changes.
 
 In Table\ref{tab:t4-paired} we see both DPO and PPO have P values of 1 for Unsafe Non Refusal and GRPO also has a high p value of 0.625. Meaning that the data is not representative
 of a systematic change. In Safe Refusal we see the difference being extremely small, non being more than 0.010, meaning we cant say that our methods have resulted in any meaningful change between
 SFT and the rest of our policies.
 
 Table\ref{tab:t4-audit} shows an agreement of upto 70\% with compared to a manual audit, however it should be noted that the AI judge does not use the ambiguous category at all.
+A more thorough breakdown can be seen in Table\ref{tab:t4_disagreement_types} where we see that the three most common difference were between justified refusal and over refusals,
+safe answer and justified refusal, and ambiguous and justified refusal. Though it should be noted that since the manual audit was done by just one person, the influence of human bias would be high in this
+analysis.
 
 \subsection{Feedback Source: RLVR versus RLAIF}
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \small
 \caption{Exact final-answer accuracy, format compliance, and mean response length on GSM8K ($n=300$) and SVAMP ($n=100$).}
@@ -488,7 +602,7 @@ RLAIF & 28.3\% (0.026) & 35.7 & 275.5 & 46\% (0.050) & 59 & 163.8 & +17.7 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \small
 \caption{Paired accuracy comparisons on identical problems using exact McNemar tests.}
@@ -508,7 +622,7 @@ SVAMP & RLAIF vs.\ RLVR & 2 & 0 & 2  & 0.5000 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 \small
 \caption{Controlled response-pair diagnostics comparing the verifier with the AI judge. The clean, correct response is the preferred reference.}
@@ -537,6 +651,13 @@ Gold distractor, wrong final
 \end{tabular}
 \end{table}
 
+We now measure the difference between a verifiable reward and an AI reward. The verifiable reward has the benefit of being much more concrete and stable, either the answer is correct or
+it is not.
+
+\[r_{\mathrm{RLVR}}(x, y) = 1\left[\mathrm{verifier}(y) = \mathrm{gold}(x)\right]\]
+
+However this also has its limits in its nature, as that is all that it can see, and AI Judge would however look at the entire response and make a more holistic score based on that.
+
 We can see SFT perform the worst while RLVR performs the best in GSM8K in table\ref{tab:t5-acc}, however in we also see RLAIF perform better than RLVR in SVAMP.
 In paired accuracy comparison we see that excluding the first comparison, all p values are greater than or equal to 0.5, making the data unreliable and it cannot be used to draw any
 conclusive conclusions.
@@ -547,28 +668,136 @@ the judge however only prefers clean 5\% of the time while tieing 95\% of the ti
 the perturbation 25\% of the time. Which by itself is not bad, but combined with our previous result it strongly suggests that AI judge may have a strong stylistic bias. Lastly,
 Gold distractor, wrong final seems to have 100\% better preference for clean with verifier (again this is expected), but judge Ties 80\% of the time, which shows poor performance.
 
+We see in this data clearly that AI is able to distinguish responses that a verifier can't since it look at the entire response and not just the end result. This makes it more flexible and able to distinguish between
+faults that a verifier would not be able to, like chains of reasoning, however this also made the Judge more susceptible to other aspects like the style, verbosity, distractors and so on for the answers.
+Like in Correct answer, corrupted reasoning where the verifier cant detect the wrong reasoning, but in Correct reasoning, wrong final answer the verifier will always catch the wrong answer whereas the AI might be fooled.
+Persuasive filler has no effective on the AI judge but does so on the verifier, and the same goes for Gold-answer distractor.
+
+In domain difference is noticeable but out of domain (on SVAMP) there is no difference between SFT and RLVR, but RLAIF was more effective.
+
 
 \subsection{Cross Task Discussion}
 
+In our experiments at the very least, it was difficult to see any dramatic changes, whether it was across polices or within them.
+In the DPO $\beta$ study, the model did not strongly react to changes in values and we were not able to narrow down a clear winner or even relationship for that matter.
+There was a more clear result in the PPO study however, the $\beta_{KL}$ study very directly showed us that we need to keep our model near the original model to retained
+capabilities, with 0 penalty resulting in the most dramatic reward deterioration and the highest penalty resulting in the least. But the held out rewards again complicated
+the story. The corresponding rewards were 1.830, 1.852, and 1.894, preventing us from giving a concrete correlation or deducing a more direct effect. We can interpret this as
+a change in optimization behavior while the end result remained mostly the same. something similar happened with the GRPO study, even though the mechanism literally switched between
+the Dr GRPO and Cannonical GRPO, the held out rewards stayed similar and even favoured Canonical GRPO a little. Giving us the same story, that normalization changes our internal
+gradient allocation (the mechanism changes) but the end result did not give us an equally drastic difference.
+
+We also saw a difference in architecture between offline and online. For DPO When the preferred response was longer, accuracy was 43.\% for the length-balanced model, compared with 44.9\% for standard DPO.
+When lengths were matched, accuracy was 58.8\% for length-balanced DPO and 57\% for standard DPO. PPO's standard continuation had mean training reward of 1.24, but the first-five versus last-five update means fell from 1.14 to 0.53.
+Standard GRPO's corresponding means fell from 1.17 to 0.82. PPO's critic was weak, mean explained variance was \(-15.2\), and mean critic-return correlation was 0.089. GRPO capped 16 of 80 completions at 512 tokens.
+This showed us a difference in weakness between offline and online training. Offline is more susceptible to weakness provided within the dataset while online had an issue of the quality and distribution in the
+newly sampled data.
+
+In safety we saw all models perform relatively close to each other again with no clear winner, preventing us from making an direct claims on training methods or hyperparameters. However the limitations of this study
+should be noted, our training was quite small and limited in the context of LLMs, it is possible that more direct connections could be found with higher volume of data and more compute, this can not be used to claim that
+the difference between methods or the resulting performances are negligible from each other.
+
 \section{Conclusions}
 
-\section{References}
+We sought to use fine tuning for safety calibration of our models. We used three main fine tunning methods on our LLM: DPO, PPO, and GRPO. We hoped to find noticeable differences between these methods and improvements in safety
+for LLMs. While we were certainly able to find patterns of changes within these models, like with PPO $\beta_{KL}$ study, there were no drastic changes overall that would make us suggest one model conclusively over another. We were able
+to see that practical results, while they matched theory, were small in their magnitude of differences, most likely due to the limited scope of this study and the small training we did, relative to LLMs in terms of compute and time.
+While we can not conclusively make any judgement based on our findings, they have certainly helped reinforce existing theory and results about these architectures.
+
+\small
+\nocite{*}
+\bibliographystyle{plainnat}
+\bibliography{refs}
+\normalsize
+
+\clearpage
 
 \appendix
 \section*{Appendix}
 
-\section{More Method Details}
-\label{app:more-method}
+\section{GRPO Standard Run}
 
-\section{Deviations and Caveats}
-\label{app:deviations}
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lr}
+\toprule
+Quantity & Value \\
+\midrule
+Mean reward, first 5 / last 5 updates & 1.17 / 0.82 \\
+Mean within-group reward SD & 0.526 \\
+Uninformative groups & 0/20 \\
+Completions capped & 16/80 \\
+All completions capped; update skipped & 1/20 \\
+Mean sampled KL estimate & 0.00017 \\
+Maximum clip fraction & 0.000 \\
+\bottomrule
+\end{tabular}
+\caption{Standard GRPO continuation over 20 updates with $K=4$.
+Capped completions are masked according to the training setup.}
+\label{tab:grpo_standard}
+\end{table}
 
-\subsection{Direct Preference Optimization (DPO)}
+\section{Safety and Performance Metric}
 
-\begin{tight}
-  \item We changed the Batch Size to 1 and Gradient Accumulate Steps to 16, keeping effective batch size constant. This was done as our hardware would run out of memory otherwise.
-\end{tight}
+\begin{table*}[!ht]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Task 1--3 optimization metrics alongside Task 4 safety
+outcomes. Safety rates are judge-assigned; keyword rates provide
+a separate heuristic check.}
+\label{tab:t4_reward_safety}
+\begin{tabular}{l p{4.1cm} c c c c}
+\toprule
+Policy & Optimization metric reported in Tasks 1--3
+& Safe refusal (judge) & Safe refusal (keyword)
+& Unsafe non-refusal (judge) & Unsafe non-refusal (keyword) \\
+\midrule
+SFT
+& Reference policy
+& 40.4\% & 40.4\% & 11.5\% & 10.5\% \\
+DPO
+& Preference accuracy: 62.8\%;
+  reward-model score: $1.38 \pm 1.16$
+& 43.6\% & 40.0\% & 12.0\% & 11.0\% \\
+PPO
+& Held-out reward: $1.838 \pm 0.125$;
+  change from midpoint: $-0.028 \pm 0.035$
+& 41.2\% & 40.4\% & 11.0\% & 10.5\% \\
+GRPO
+& Held-out reward: $1.904 \pm 0.120$;
+  change from midpoint: $+0.049 \pm 0.032$
+& 41.6\% & 40.0\% & 12.5\% & 11.5\% \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
+\section{Manual Audit vs AI Judge}
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Types of manual-versus-judge disagreement. Percentages use
+the 63 pairs on which the labels disagree.}
+\label{tab:t4_disagreement_types}
+\begin{tabular}{lrr}
+\toprule
+Manual label & Judge label & Count (\% of disagreements) \\
+\midrule
+Over-refusal & Justified refusal & 24 (38.1\%) \\
+Safe answer & Justified refusal & 18 (28.6\%) \\
+Ambiguous & Justified refusal & 13 (20.6\%) \\
+Justified refusal & Safe answer & 6 (9.5\%) \\
+Safe answer & Unsafe compliance & 1 (1.6\%) \\
+Unsafe compliance & Justified refusal & 1 (1.6\%) \\
+\midrule
+Total disagreements & & 63 (100\%) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
 \end{document}
